@@ -18,9 +18,7 @@
 </header>
 
 <main class="center-shell">
-  <div class="card wide" id="cardNoiDung">
-    <!-- render bằng JS -->
-  </div>
+  <div class="card wide" id="cardNoiDung"></div>
 </main>
 
 <footer class="site">© 2026 Phòng Thi Trực Tuyến.</footer>
@@ -58,7 +56,6 @@
     `;
     sessionStorage.removeItem('pt_ket_qua');
   } else {
-    // Không có dữ liệu kết quả -> có thể người dùng vào thẳng URL này
     card.innerHTML = `
       <h1>Không có dữ liệu kết quả</h1>
       <p class="sub">Vui lòng tra cứu điểm bằng mã dự thi của bạn.</p>
