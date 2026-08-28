@@ -66,7 +66,6 @@
       return;
     }
 
-    // Lưu đề thi vào sessionStorage để trang thi.html dùng, kèm mã dự thi
     sessionStorage.setItem('pt_ma_du_thi', ma);
     sessionStorage.setItem('pt_de_thi', JSON.stringify(result));
     window.location.href = 'thi.html';
