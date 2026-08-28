@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vào phòng thi — Phòng Thi Trực Tuyến</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#2D6CDF"/><path d="M12 20l5 5 11-11" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div>PHÒNG THI TRỰC TUYẾN<br><small>Kỳ thi thử — làm bài nghiêm túc</small></div>
+    </a>
+  </div>
+</header>
+
+<main class="center-shell">
+  <div class="card">
+    <h1>Vào phòng thi</h1>
+    <p class="sub">Nhập đúng mã dự thi đã được cấp. Lưu ý: mỗi mã chỉ được sử dụng để làm bài <b>1 lần duy nhất</b>.</p>
+
+    <div class="form-error" id="err" style="display:none;"></div>
+
+    <form id="vaoThiForm">
+      <div class="field">
+        <label for="maDuThi">Mã dự thi</label>
+        <input type="text" id="maDuThi" placeholder="VD: TSA001" required autocomplete="off">
+        <div class="hint">Không phân biệt chữ hoa/thường.</div>
+      </div>
+      <button type="submit" class="btn btn-primary" id="submitBtn">Vào phòng thi 🚀</button>
+    </form>
+  </div>
+</main>
+
+<footer class="site">© 2026 Phòng Thi Trực Tuyến.</footer>
+
+<div class="toast"><span class="dot"></span><span class="msg"></span></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+  const form = document.getElementById('vaoThiForm');
+  const errEl = document.getElementById('err');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errEl.style.display = 'none';
+
+    const ma = PT.chuanHoaMa(document.getElementById('maDuThi').value);
+    if (!ma) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Đang kiểm tra mã...';
+
+    const result = await PT.goiApiGet('layDeThi', { ma });
+
+    if (result.error) {
+      errEl.textContent = result.error;
+      errEl.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Vào phòng thi 🚀';
+      return;
+    }
+
+    // Lưu đề thi vào sessionStorage để trang thi.html dùng, kèm mã dự thi
+    sessionStorage.setItem('pt_ma_du_thi', ma);
+    sessionStorage.setItem('pt_de_thi', JSON.stringify(result));
+    window.location.href = 'thi.html';
+  });
+</script>
+</body>
+</html>

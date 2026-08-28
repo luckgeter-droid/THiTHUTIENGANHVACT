@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kết quả — Phòng Thi Trực Tuyến</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#2D6CDF"/><path d="M12 20l5 5 11-11" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div>PHÒNG THI TRỰC TUYẾN<br><small>Kỳ thi thử — làm bài nghiêm túc</small></div>
+    </a>
+  </div>
+</header>
+
+<main class="center-shell">
+  <div class="card wide" id="cardNoiDung">
+    <!-- render bằng JS -->
+  </div>
+</main>
+
+<footer class="site">© 2026 Phòng Thi Trực Tuyến.</footer>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+  const card = document.getElementById('cardNoiDung');
+  const loi = sessionStorage.getItem('pt_loi_nop_bai');
+  const ketQuaRaw = sessionStorage.getItem('pt_ket_qua');
+
+  if (loi) {
+    card.innerHTML = `
+      <h1>Không thể nộp bài</h1>
+      <div class="form-error">${loi}</div>
+      <p class="sub">Vui lòng liên hệ quản trị viên để được hỗ trợ kiểm tra lại mã dự thi của bạn.</p>
+      <a href="index.html" class="btn btn-ghost">Về trang chủ</a>
+    `;
+    sessionStorage.removeItem('pt_loi_nop_bai');
+  } else if (ketQuaRaw) {
+    const kq = JSON.parse(ketQuaRaw);
+    const rows = Object.entries(kq.chiTietPhan || {}).map(([ten, v]) => `
+      <div class="row"><span>${ten}</span><b>${v.dung}/${v.tong}</b></div>
+    `).join('');
+
+    card.innerHTML = `
+      <h1>Nộp bài thành công 🎉</h1>
+      <p class="sub">Cảm ơn bạn đã hoàn thành bài thi. Kết quả của bạn đã được ghi nhận.</p>
+      <div class="result-score">
+        <div class="num">${kq.diem}</div>
+        <div class="lbl">ĐIỂM / THANG 10 · ĐÚNG ${kq.dung}/${kq.tong} CÂU</div>
+      </div>
+      <div class="result-breakdown">${rows}</div>
+      <a href="index.html" class="btn btn-ghost" style="margin-top:22px;">Về trang chủ</a>
+    `;
+    sessionStorage.removeItem('pt_ket_qua');
+  } else {
+    // Không có dữ liệu kết quả -> có thể người dùng vào thẳng URL này
+    card.innerHTML = `
+      <h1>Không có dữ liệu kết quả</h1>
+      <p class="sub">Vui lòng tra cứu điểm bằng mã dự thi của bạn.</p>
+      <a href="tra-cuu.html" class="btn btn-primary">Tra cứu điểm</a>
+    `;
+  }
+</script>
+</body>
+</html>

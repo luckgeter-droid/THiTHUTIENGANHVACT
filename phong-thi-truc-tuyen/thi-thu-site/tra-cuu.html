@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tra cứu điểm — Phòng Thi Trực Tuyến</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#2D6CDF"/><path d="M12 20l5 5 11-11" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div>PHÒNG THI TRỰC TUYẾN<br><small>Kỳ thi thử — làm bài nghiêm túc</small></div>
+    </a>
+  </div>
+</header>
+
+<main class="center-shell">
+  <div class="card">
+    <h1>Tra cứu điểm</h1>
+    <p class="sub">Nhập mã dự thi để xem lại kết quả bài làm của bạn.</p>
+
+    <div class="form-error" id="err" style="display:none;"></div>
+
+    <form id="traCuuForm">
+      <div class="field">
+        <label for="maDuThi">Mã dự thi</label>
+        <input type="text" id="maDuThi" placeholder="VD: TSA001" required autocomplete="off">
+      </div>
+      <button type="submit" class="btn btn-primary" id="submitBtn">Tra cứu 🔍</button>
+    </form>
+
+    <div id="ketQuaBox" style="display:none; margin-top:24px;">
+      <div class="result-score">
+        <div class="num" id="ktDiem">—</div>
+        <div class="lbl" id="ktChiTiet">—</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site">© 2026 Phòng Thi Trực Tuyến.</footer>
+
+<div class="toast"><span class="dot"></span><span class="msg"></span></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+  const form = document.getElementById('traCuuForm');
+  const errEl = document.getElementById('err');
+  const submitBtn = document.getElementById('submitBtn');
+  const box = document.getElementById('ketQuaBox');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errEl.style.display = 'none';
+    box.style.display = 'none';
+
+    const ma = PT.chuanHoaMa(document.getElementById('maDuThi').value);
+    if (!ma) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Đang tra cứu...';
+
+    const kq = await PT.goiApiGet('traCuu', { ma });
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Tra cứu 🔍';
+
+    if (kq.error) {
+      errEl.textContent = kq.error;
+      errEl.style.display = 'block';
+      return;
+    }
+
+    document.getElementById('ktDiem').textContent = kq.diem;
+    document.getElementById('ktChiTiet').textContent = `ĐÚNG ${kq.soCauDung} CÂU · NỘP LÚC ${kq.thoiGianNop}`;
+    box.style.display = 'block';
+  });
+</script>
+</body>
+</html>
