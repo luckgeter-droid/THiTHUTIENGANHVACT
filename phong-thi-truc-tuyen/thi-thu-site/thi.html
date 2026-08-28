@@ -52,6 +52,18 @@
   </div>
 </div>
 
+<!-- Modal cảnh báo ESC -->
+<div class="modal-overlay" id="escModal">
+  <div class="modal">
+    <h3>⚠️ Cảnh báo rời khỏi phòng thi</h3>
+    <p>Bạn đã nhấn phím ESC, có thể bạn đang rời khỏi màn hình thi.<br>
+    Nếu không quay lại trong <b id="escTimer">20</b> giây, bài thi sẽ tự động nộp.</p>
+    <div class="actions">
+      <button class="btn btn-primary" id="btnQuayLai">Quay lại làm bài</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast"><span class="dot"></span><span class="msg"></span></div>
 
 <script src="assets/js/config.js"></script>
@@ -259,6 +271,45 @@
       e.preventDefault();
       e.returnValue = '';
     }
+  });
+
+  // ----- Xử lý ESC -----
+  let escCountdown = 20;
+  let escInterval = null;
+  let escActive = false;
+  const escModal = document.getElementById('escModal');
+  const escTimerEl = document.getElementById('escTimer');
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !daNop && !escActive) {
+      e.preventDefault();
+      escActive = true;
+      escCountdown = 20;
+      escTimerEl.textContent = escCountdown;
+      escModal.classList.add('open');
+      if (escInterval) clearInterval(escInterval);
+      escInterval = setInterval(() => {
+        escCountdown -= 1;
+        escTimerEl.textContent = escCountdown;
+        if (escCountdown <= 0) {
+          clearInterval(escInterval);
+          escInterval = null;
+          escModal.classList.remove('open');
+          escActive = false;
+          // Tự động nộp bài
+          thucHienNopBai();
+        }
+      }, 1000);
+    }
+  });
+
+  document.getElementById('btnQuayLai').addEventListener('click', () => {
+    if (escInterval) {
+      clearInterval(escInterval);
+      escInterval = null;
+    }
+    escActive = false;
+    escModal.classList.remove('open');
   });
 
   document.getElementById('loadingShell').style.display = 'none';
